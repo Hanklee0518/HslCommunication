@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using HslCommunication.Core.Types;
+using System.Net;
 
 namespace HslCommunication.Core.Net
 {
     /// <summary>
     /// 所有虚拟的数据服务器的基类
     /// </summary>
-    public class NetworkDataServerBase : NetworkServerBase
+    public class NetworkDataServerBase : NetworkAuthenticationServerBase, IDisposable
     {
         #region Constructor
         
@@ -145,7 +147,26 @@ namespace HslCommunication.Core.Net
         {
             OnDataReceived?.Invoke( this, receive );
         }
+        /// <summary>
+        /// Show DataSend To PLC
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="data"></param>
+        public delegate void DataSendDelegate(object sender, byte[] data);
 
+        /// <summary>
+        /// OnDataSend
+        /// </summary>
+        public event DataSendDelegate OnDataSend;
+
+        /// <summary>
+        /// RaiseDataSend
+        /// </summary>
+        /// <param name="receive"></param>
+        protected void RaiseDataSend(byte[] receive)
+        {
+            OnDataSend?.Invoke(this, receive);
+        }
         #endregion
 
         #region Protect Member
@@ -169,35 +190,31 @@ namespace HslCommunication.Core.Net
         {
 
         }
-        
+
         /// <summary>
         /// 当接收到了新的请求的时候执行的操作
         /// </summary>
-        /// <param name="obj">异步对象</param>
-        protected override void ThreadPoolLogin( object obj )
+        /// <param name="socket">异步对象</param>
+        /// <param name="endPoint">终结点</param>
+        protected override void ThreadPoolLogin( Socket socket, IPEndPoint endPoint )
         {
             // 为了提高系统的响应能力，采用异步来实现，即时有数万台设备接入也能应付
-            if (obj is Socket socket)
+            string ipAddress = endPoint.Address.ToString( );
+
+            if (IsTrustedClientsOnly)
             {
-                System.Net.IPEndPoint endPoint = (System.Net.IPEndPoint)socket.RemoteEndPoint;
-                string ipAddress = endPoint.Address.ToString( );
-
-                if (IsTrustedClientsOnly)
+                // 检查受信任的情况
+                if (!CheckIpAddressTrusted( ipAddress ))
                 {
-                    // 检查受信任的情况
-                    if (!CheckIpAddressTrusted( ipAddress ))
-                    {
-                        // 客户端不被信任，退出
-                        LogNet?.WriteDebug( ToString( ), string.Format( StringResources.Language.ClientDisableLogin, endPoint ) );
-                        socket.Close( );
-                        return;
-                    }
+                    // 客户端不被信任，退出
+                    LogNet?.WriteDebug( ToString( ), string.Format( StringResources.Language.ClientDisableLogin, endPoint ) );
+                    socket.Close( );
+                    return;
                 }
-
-                LogNet?.WriteDebug( ToString( ), string.Format( StringResources.Language.ClientOnlineInfo, endPoint ) );
-
-                ThreadPoolLoginAfterClientCheck( socket, endPoint );
             }
+
+            if(!IsUseAccountCertificate) LogNet?.WriteDebug( ToString( ), string.Format( StringResources.Language.ClientOnlineInfo, endPoint ) );
+            ThreadPoolLoginAfterClientCheck( socket, endPoint );
         }
 
 
@@ -986,6 +1003,23 @@ namespace HslCommunication.Core.Net
             byte[] temp = ByteTransform.TransByte( value, Encoding.Unicode );
             temp = SoftBasic.ArrayExpandToLength( temp, length * 2 );
             return Write( address, temp );
+        }
+
+        #endregion
+
+        #region IDisposable Support
+
+        /// <summary>
+        /// 释放当前的对象
+        /// </summary>
+        /// <param name="disposing">是否托管对象</param>
+        protected override void Dispose( bool disposing )
+        {
+            if (disposing)
+            {
+                lock_trusted_clients?.Dispose( );
+            }
+            base.Dispose( disposing );
         }
 
         #endregion

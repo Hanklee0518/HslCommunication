@@ -77,6 +77,12 @@
     <Compile Include="Control\FormPipe.Designer.cs">
       <DependentUpon>FormPipe.cs</DependentUpon>
     </Compile>
+    <Compile Include="DemoControl\UserControlHead.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DemoControl\UserControlHead.Designer.cs">
+      <DependentUpon>UserControlHead.cs</DependentUpon>
+    </Compile>
     <Compile Include="DemoUtils.cs" />
     <Compile Include="FormAuthor.cs">
       <SubType>Form</SubType>
@@ -138,6 +144,12 @@
     <Compile Include="FormMail.Designer.cs">
       <DependentUpon>FormMail.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormOpenProtocol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOpenProtocol.Designer.cs">
+      <DependentUpon>FormOpenProtocol.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRegister.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -173,6 +185,24 @@
     </Compile>
     <Compile Include="Modbus\FormTrustedClient.Designer.cs">
       <DependentUpon>FormTrustedClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PLC\FormFujiSPB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PLC\FormFujiSPB.Designer.cs">
+      <DependentUpon>FormFujiSPB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PLC\FormFatekPrograme.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PLC\FormFatekPrograme.Designer.cs">
+      <DependentUpon>FormFatekPrograme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PLC\FormOmronCip.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PLC\FormOmronCip.Designer.cs">
+      <DependentUpon>FormOmronCip.cs</DependentUpon>
     </Compile>
     <Compile Include="PLC\FormPanasonicBinary.cs">
       <SubType>Form</SubType>
@@ -416,6 +446,12 @@
     <Compile Include="Robot\FormEfort.Designer.cs">
       <DependentUpon>FormEfort.cs</DependentUpon>
     </Compile>
+    <Compile Include="Robot\FormYRC1000.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Robot\FormYRC1000.Designer.cs">
+      <DependentUpon>FormYRC1000.cs</DependentUpon>
+    </Compile>
     <Compile Include="Robot\FormKuka.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -448,6 +484,9 @@
     <EmbeddedResource Include="DemoControl\UserControlCurve.resx">
       <DependentUpon>UserControlCurve.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DemoControl\UserControlHead.resx">
+      <DependentUpon>UserControlHead.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormAuthor.resx">
       <DependentUpon>FormAuthor.cs</DependentUpon>
     </EmbeddedResource>
@@ -478,6 +517,9 @@
     <EmbeddedResource Include="FormMail.resx">
       <DependentUpon>FormMail.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormOpenProtocol.resx">
+      <DependentUpon>FormOpenProtocol.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormRegister.resx">
       <DependentUpon>FormRegister.cs</DependentUpon>
     </EmbeddedResource>
@@ -495,6 +537,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modbus\FormTrustedClient.resx">
       <DependentUpon>FormTrustedClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PLC\FormFujiSPB.resx">
+      <DependentUpon>FormFujiSPB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PLC\FormFatekPrograme.resx">
+      <DependentUpon>FormFatekPrograme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PLC\FormOmronCip.resx">
+      <DependentUpon>FormOmronCip.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PLC\FormPanasonicBinary.resx">
       <DependentUpon>FormPanasonicBinary.cs</DependentUpon>
@@ -625,6 +676,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Robot\FormEfort.resx">
       <DependentUpon>FormEfort.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Robot\FormYRC1000.resx">
+      <DependentUpon>FormYRC1000.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Robot\FormKuka.resx">
       <DependentUpon>FormKuka.cs</DependentUpon>

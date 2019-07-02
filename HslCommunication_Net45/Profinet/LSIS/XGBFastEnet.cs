@@ -13,6 +13,10 @@ namespace HslCommunication.Profinet.LSIS
     /// <summary>
     /// XGB Fast Enet I/F module supports open Ethernet. It provides network configuration that is to connect LSIS and other company PLC, PC on network
     /// </summary>
+    /// <remarks>
+    /// Address example likes the follow
+    /// [welcome to finish]
+    /// </remarks>
     public class XGBFastEnet : NetworkDeviceBase<LsisFastEnetMessage, RegularByteTransform>
     {
         #region Constractor
@@ -161,17 +165,17 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns></returns>
         public OperateResult WriteCoil(string address, bool value)
         {
-           
-            return Write(address, new byte[] { (byte)(value==true ? 0x01 : 0x00), 0x00 });
+
+            return Write(address, new byte[] { (byte)(value == true ? 0x01 : 0x00), 0x00 });
         }
         #endregion
 
         #region Private Member
 
-        private byte[] PackCommand( byte[] coreCommand )
+        private byte[] PackCommand(byte[] coreCommand)
         {
             byte[] command = new byte[coreCommand.Length + 20];
-            Encoding.ASCII.GetBytes( CompanyID1 ).CopyTo( command, 0 );
+            Encoding.ASCII.GetBytes(CompanyID1).CopyTo(command, 0);
             switch (cpuInfo)
             {
                 case LSCpuInfo.XGK: command[12] = 0xA0; break;
@@ -182,7 +186,7 @@ namespace HslCommunication.Profinet.LSIS
                 default: break;
             }
             command[13] = 0x33;
-            BitConverter.GetBytes( (short)coreCommand.Length ).CopyTo( command, 16 );
+            BitConverter.GetBytes((short)coreCommand.Length).CopyTo(command, 16);
             command[18] = (byte)(baseNo * 16 + slotNo);
 
             int count = 0;
@@ -192,9 +196,9 @@ namespace HslCommunication.Profinet.LSIS
             }
             command[19] = (byte)count;
 
-            coreCommand.CopyTo( command, 20 );
+            coreCommand.CopyTo(command, 20);
 
-            string hex = SoftBasic.ByteToHexString( command, ' ' );
+            string hex = SoftBasic.ByteToHexString(command, ' ');
             return command;
         }
 
@@ -211,27 +215,13 @@ namespace HslCommunication.Profinet.LSIS
         #endregion
 
         #region Static Helper
-        /// <summary>
-        /// LSDataType to Address
-        /// </summary>
-        public enum LsDataType
-        {
-            Bit= 0x00,
-            Byte= 0x01,
-            Word= 0x02,
-            DWord= 0x04,
-            LWord= 0x08,
-            Continuous= 0x14
-        }
 
-        
         /// <summary>
         /// AnalysisAddress
         /// </summary>
         /// <param name="address"></param>
-        /// <param name="isRead"></param>
         /// <returns></returns>
-        public static OperateResult<string> AnalysisAddress(string address, bool isRead)
+        public static OperateResult<string> AnalysisAddress(string address)
         {
             // P,M,L,K,F,T
             // P,M,L,K,F,T,C,D,S
@@ -241,81 +231,48 @@ namespace HslCommunication.Profinet.LSIS
                 sb.Append("%");
                 char[] types = new char[] { 'P', 'M', 'L', 'K', 'F', 'T', 'C', 'D', 'S', 'Q', 'I', 'N', 'U', 'Z', 'R' };
                 bool exsist = false;
-                if (isRead)
-                {
                     for (int i = 0; i < types.Length; i++)
                     {
                         if (types[i] == address[0])
                         {
-                            sb.Append(types[i]);
-                            sb.Append("B");
-                            if (address[1] == 'B')
+
+                            if (address[1] == 'X')
                             {
-                                sb.Append(int.Parse(address.Substring(2)));
-                            }
-                            else if (address[1] == 'W')
-                            {
-                                sb.Append(int.Parse(address.Substring(2)) * 2);
-                            }
-                            else if (address[1] == 'D')
-                            {
-                                sb.Append(int.Parse(address.Substring(2)) * 4);
+                                sb.Append(address);
                             }
                             else
                             {
-                                sb.Append(int.Parse(address.Substring(1)));
+                                sb.Append(types[i]);
+                                sb.Append("B");
+                                if (address[1] == 'B')
+                                {
+                                    sb.Append(int.Parse(address.Substring(2)) * 2);
+                                }
+                                else if (address[1] == 'W')
+                                {
+                                    sb.Append(int.Parse(address.Substring(2)) * 2);
+                                }
+                                else if (address[1] == 'D')
+                                {
+                                    sb.Append(int.Parse(address.Substring(2)) * 4);
+                                }
+                                else if (address[1] == 'L')
+                                {
+                                    sb.Append(int.Parse(address.Substring(2)) * 8);
+                                }
+                                else
+                                {
+                                    sb.Append(int.Parse(address.Substring(1)));
                             }
+                            }
+
 
                             exsist = true;
                             break;
                         }
                     }
-                }
-                else
-                {
-                    if (address.Length >= 3 || address.Length >= 5)
-                    {
-                        for (int i = 0; i < types.Length; i++)
-                        {
-                            if (types[i] == address[0])
-                            {
-
-
-                                if (address[1] == 'B')
-                                {
-                                    sb.Append(address);
-                                    exsist = true;
-                                    break;
-                                }
-                                else if (address[1] == 'W')
-                                {
-                                    sb.Append(address);
-                                    exsist = true;
-                                    break;
-                                }
-                                else if (address[1] == 'D')
-                                {
-                                    sb.Append(address);
-                                    exsist = true;
-                                    break;
-                                }
-                                else if (address[1] == 'X')
-                                {
-                                    sb.Append(address);
-                                    exsist = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    exsist = false;
-                                    break;
-                                }
-
-                            }
-                        }
-                    }
-                   
-                }
+                
+                
                 if (!exsist) throw new Exception(StringResources.Language.NotSupportedDataType);
             }
             catch (Exception ex)
@@ -331,13 +288,13 @@ namespace HslCommunication.Profinet.LSIS
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public  static OperateResult<string> AnalysisAddressDataType(string address)
+        public static OperateResult<string> GetDataTypeToAddress(string address)
         {
             string lSDataType = string.Empty; ;
             try
             {
 
-                char[] types = new char[] { 'P', 'M', 'L', 'K', 'F', 'T', 'C', 'D', 'S', 'Q', 'I','R' };
+                char[] types = new char[] { 'P', 'M', 'L', 'K', 'F', 'T', 'C', 'D', 'S', 'Q', 'I', 'R' };
                 bool exsist = false;
 
                 for (int i = 0; i < types.Length; i++)
@@ -359,15 +316,16 @@ namespace HslCommunication.Profinet.LSIS
                         }
                         else if (address[1] == 'B')
                         {
-                            lSDataType = "Continuous";
+                            lSDataType = "Byte";
                         }
-                        else if (address[1] == 'X')
+                        if (address[1] == 'X')
                         {
                             lSDataType = "Bit";
                         }
                         else
                         {
-                            exsist = false;
+                            lSDataType = "Continuous";
+                            exsist = true;
                             break;
                         }
                         exsist = true;
@@ -388,7 +346,7 @@ namespace HslCommunication.Profinet.LSIS
         }
         private static OperateResult<byte[]> BuildReadByteCommand(string address, ushort length)
         {
-            var analysisResult = AnalysisAddress(address, true);
+            var analysisResult = AnalysisAddress(address);
             if (!analysisResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisResult);
 
             byte[] command = new byte[12 + analysisResult.Content.Length];
@@ -411,24 +369,24 @@ namespace HslCommunication.Profinet.LSIS
 
         private static OperateResult<byte[]> BuildWriteByteCommand(string address, byte[] data)
         {
-            var analysisResult = AnalysisAddress(address, false);
+            var analysisResult = AnalysisAddress(address);
             if (!analysisResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisResult);
-            var analysisDataTypeResult = AnalysisAddressDataType(address);
-            if (!analysisDataTypeResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisDataTypeResult);
-            var lSDataType = (LsDataType)Enum.Parse(typeof(LsDataType), analysisDataTypeResult.Content);
+            var DataTypeResult = GetDataTypeToAddress(address);
+            if (!DataTypeResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(DataTypeResult);
 
             byte[] command = new byte[12 + analysisResult.Content.Length + data.Length];
 
-            switch (lSDataType)
+            switch (DataTypeResult.Content)
             {
-                case LsDataType.Bit:
-                case LsDataType.Byte:
+                case "Bit":
+                    command[2] = 0x00; break;
+                case "Byte":
                     command[2] = 0x01; break;
-                case LsDataType.Word:
+                case "Word":
                     command[2] = 0x02; break;
-                case LsDataType.DWord: command[2] = 0x04; break;
-                case LsDataType.LWord: command[2] = 0x08; break;
-                case LsDataType.Continuous: command[2] = 0x14; break;
+                case "DWord": command[2] = 0x03; break;
+                case "LWord": command[2] = 0x04; break;
+                case "Continuous": command[2] = 0x14; break;
                 default: break;
             }
             command[0] = 0x58;    // write
@@ -541,7 +499,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>字符串</returns>
         public override string ToString()
         {
-            return base.ToString();
+            return $"XGBFastEnet[{IpAddress}:{Port}]";
         }
 
         #endregion

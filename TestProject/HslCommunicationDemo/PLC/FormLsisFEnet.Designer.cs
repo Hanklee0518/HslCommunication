@@ -56,8 +56,6 @@
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.button24 = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.button14 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
@@ -147,7 +145,7 @@
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(197, 45);
             this.label22.TabIndex = 7;
-            this.label22.Text = "M100  D100 P100 T100 C100\r\nTo Read\r\n";
+            this.label22.Text = "M100  D100 P100 T100 C100\r\n\r\n";
             // 
             // label21
             // 
@@ -377,8 +375,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label17);
-            this.groupBox2.Controls.Add(this.button24);
             this.groupBox2.Controls.Add(this.label19);
             this.groupBox2.Controls.Add(this.button14);
             this.groupBox2.Controls.Add(this.button15);
@@ -400,25 +396,6 @@
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "单数据写入测试";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(26, 130);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(162, 34);
-            this.label17.TabIndex = 19;
-            this.label17.Text = "Address: MX100  DW100  \r\nTW100  CW100  To Write";
-            // 
-            // button24
-            // 
-            this.button24.Location = new System.Drawing.Point(226, 22);
-            this.button24.Name = "button24";
-            this.button24.Size = new System.Drawing.Size(82, 28);
-            this.button24.TabIndex = 18;
-            this.button24.Text = "w-Bit";
-            this.button24.UseVisualStyleBackColor = true;
-            this.button24.Click += new System.EventHandler(this.Button24_Click);
             // 
             // label19
             // 
@@ -892,7 +869,5 @@
         private DemoControl.UserControlCurve userControlCurve1;
         private System.Windows.Forms.TextBox textBox12;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button button24;
-        private System.Windows.Forms.Label label17;
     }
 }

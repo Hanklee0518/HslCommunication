@@ -51,7 +51,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>byte数组值</returns>
         public override OperateResult<byte[]> Read(string address, ushort length)
         {
-            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address, true);
+            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address);
             if (!analysis.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysis);
 
             int startIndex = CheckAddress(analysis.Content.Substring(3));
@@ -73,7 +73,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>是否写入成功的结果对象</returns>
         public override OperateResult Write(string address, byte[] value)
         {
-            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address, false);
+            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address);
             if (!analysis.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysis);
 
             int startIndex = CheckAddress(analysis.Content.Substring(3));
@@ -126,7 +126,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>带有成功标志的结果对象</returns>
         public OperateResult<bool> ReadBool(string address)
         {
-            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address, true);
+            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address);
             if (!analysis.IsSuccess) return OperateResult.CreateFailedResult<bool>(analysis);
 
             // to do, this is not right
@@ -149,7 +149,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>是否成功的结果</returns>
         public OperateResult Write(string address, bool value)
         {
-            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address, false);
+            OperateResult<string> analysis = XGBFastEnet.AnalysisAddress(address);
             if (!analysis.IsSuccess) return analysis;
 
             // to do, this is not right
@@ -209,23 +209,27 @@ namespace HslCommunication.Profinet.LSIS
                     };
 
                     byte[] receive = read1.Content;
-
+                    byte[] SendData = null;
                     if (receive[20] == 0x54)
                     {
                         // 读数据
-                        session.WorkSocket.Send(ReadByMessage(receive));
+                         SendData = ReadByMessage(receive);
+                        RaiseDataReceived(SendData);
+                        session.WorkSocket.Send(SendData);
+                       
                     }
                     else if (receive[20] == 0x58)
                     {
-                        // 写数据
-                        session.WorkSocket.Send(WriteByMessage(receive));
+                         SendData = WriteByMessage(receive);
+                        RaiseDataReceived(SendData);
+                        session.WorkSocket.Send(SendData);
                     }
                     else
                     {
                         session.WorkSocket.Close();
                     }
 
-                    RaiseDataReceived(receive);
+                    RaiseDataSend(receive);
                     session.WorkSocket.BeginReceive(new byte[0], 0, 0, SocketFlags.None, new AsyncCallback(SocketAsyncCallBack), session);
                 }
                 catch
@@ -457,24 +461,29 @@ namespace HslCommunication.Profinet.LSIS
 
             if (receive == null) return;
             byte[] modbusCore = SoftBasic.BytesArrayRemoveLast(receive, 2);
+            byte[] SendData = null;
             if (modbusCore[3] == 0x72)
             {
                 // Read
-
-                serialPort.Write(ReadSerialByCommand(modbusCore), 0, ReadSerialByCommand(modbusCore).Length);
+                SendData = ReadSerialByCommand(modbusCore);
+                RaiseDataReceived(SendData);
+                serialPort.Write(SendData, 0, SendData.Length);
 
             }
             else if (modbusCore[3] == 0x77)
             {
                 // Write
-                serialPort.Write(WriteSerialByMessage(modbusCore),0,WriteSerialByMessage(modbusCore).Length);
+                SendData = WriteSerialByMessage(modbusCore);
+                RaiseDataReceived(SendData);
+                serialPort.Write(SendData, 0, SendData.Length);
+                
             }
             else
             {
                 serialPort.Close();
             }
            
-            if (IsStarted) RaiseDataReceived(receive);
+            if (IsStarted) RaiseDataSend(receive);
             
         }
         public byte[] HexToBytes(string hex)

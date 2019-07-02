@@ -34,6 +34,7 @@ namespace HslCommunication.Profinet.LSIS
         public byte Station { get; set; } = 0x05;
 
         #endregion
+
         #region Read Write Byte
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace HslCommunication.Profinet.LSIS
         {
             return Write(address, new byte[] { value });
         }
+
         /// <summary>
         /// WriteCoil
         /// </summary>
@@ -68,9 +70,11 @@ namespace HslCommunication.Profinet.LSIS
         public OperateResult WriteCoil(string address, bool value)
         {
 
-            return Write(address, new byte[] { (byte)(value ? 0x01 : 0x00), 0x00 });
+            return Write(address, new byte[] { (byte)(value ? 0x01 : 0x00) });
         }
+
         #endregion
+
         #region Read Write Support
 
         /// <summary>
@@ -117,7 +121,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>×Ö·û´®ÐÅÏ¢</returns>
         public override string ToString()
         {
-            return $"XGBCnet";
+            return $"XGBCnet[{PortName}:{BaudRate}]";
         }
 
         #endregion
@@ -134,7 +138,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>command bytes</returns>
         private static OperateResult<byte[]> BuildReadByteCommand(byte station, string address, ushort length)
         {
-            var analysisResult = XGBFastEnet.AnalysisAddress(address, true);
+            var analysisResult = XGBFastEnet.AnalysisAddress(address);
             if (!analysisResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisResult);
 
             List<byte> command = new List<byte>();
@@ -166,7 +170,7 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns></returns>
         private static OperateResult<byte[]> BuildReadOneCommand(byte station, string address, ushort length)
         {
-            var analysisResult = XGBFastEnet.AnalysisAddress(address, true);
+            var analysisResult = XGBFastEnet.AnalysisAddress(address);
             if (!analysisResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisResult);
 
             List<byte> command = new List<byte>();
@@ -202,30 +206,30 @@ namespace HslCommunication.Profinet.LSIS
         /// <returns>command bytes</returns>
         private static OperateResult<byte[]> BuildWriteByteCommand(byte station, string address, byte[] value)
         {
-            var analysisResult = XGBFastEnet.AnalysisAddress(address, false);
+            var analysisResult = XGBFastEnet.AnalysisAddress(address);
             if (!analysisResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisResult);
-            var analysisDataTypeResult = XGBFastEnet.AnalysisAddressDataType(address);
-            if (!analysisDataTypeResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(analysisDataTypeResult);
-            var lSDataType = (XGBFastEnet.LsDataType)Enum.Parse(typeof(XGBFastEnet.LsDataType), analysisDataTypeResult.Content);
+            var DataTypeResult = XGBFastEnet.GetDataTypeToAddress(address);
+            if (!DataTypeResult.IsSuccess) return OperateResult.CreateFailedResult<byte[]>(DataTypeResult);
+
             List<byte> command = new List<byte>();
             command.Add(0x05);    // ENQ
             command.AddRange(SoftBasic.BuildAsciiBytesFrom(station));
             command.Add(0x77);    // command w
             command.Add(0x53);    // command type: S
-            switch (lSDataType)
+            switch (DataTypeResult.Content)
             {
-                case XGBFastEnet.LsDataType.Bit:
-                case XGBFastEnet.LsDataType.Byte:
+                case "Bit":
                     command.Add(0x53);     // command type: SS
                     command.Add(0x30);    // Number of blocks
                     command.Add(0x31);
                     command.AddRange(SoftBasic.BuildAsciiBytesFrom((byte)analysisResult.Content.Length));
                     command.AddRange(Encoding.ASCII.GetBytes(analysisResult.Content));
                     break;
-                case XGBFastEnet.LsDataType.Word:
-                case XGBFastEnet.LsDataType.DWord:
-                case XGBFastEnet.LsDataType.LWord:
-                case XGBFastEnet.LsDataType.Continuous:
+                case "Byte":
+                case "Word":
+                case "DWord":
+                case "LWord":
+                case "Continuous":
                     command.Add(0x42);       // command type: SB
                     command.AddRange(SoftBasic.BuildAsciiBytesFrom((byte)analysisResult.Content.Length));
                     command.AddRange(Encoding.ASCII.GetBytes(analysisResult.Content));

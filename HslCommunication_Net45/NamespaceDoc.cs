@@ -760,6 +760,35 @@ namespace HslCommunication
     ///             <item>西门子的SiemensS7Net类当读取PLC配置长度的DB块数据时，将提示错误信息。</item>
     ///         </list>
     ///     </revision>
+    ///     <revision date="2019-6-22 " version="7.0.0" author="Richard.Hu">
+    ///         <list type="bullet">
+    ///             <item>新增安川机器人通信类，未测试。</item>
+    ///             <item>西门子的多地址读取的长度不再限制为19个，而是无限制个。</item>
+    ///             <item>NetworkDoubleBase: 实现IDispose接口，方便手动释放资源。</item>
+    ///             <item>SerialBase: 实现IDispose接口，方便手动释放资源。</item>
+    ///             <item>NetSimplifyClient:新增一个async...await方法。</item>
+    ///             <item>NetSimplifyClient:新增读取字符串数组。</item>
+    ///             <item>ModbusServer:新增支持账户密码登录，用于构建安全的服务器，仅支持hsl组件的modbus安全访问。</item>
+    ///             <item>NetSimplifyServer:新增支持账户密码登录。</item>
+    ///             <item>新增永宏PLC的编程口协议。</item>
+    ///             <item>新增富士PLC的串口通信，未测试。</item>
+    ///             <item>新增欧姆龙PLC的CIP协议通讯。</item>
+    ///             <item>初步添加OpenProtocol协议，还未完成，为测试。</item>
+    ///             <item>MelsecMcNet:字单位的批量读取长度突破960长度的限制，支持读取任意长度。</item>
+    ///             <item>MelsecMcAsciiNet:字单位的批量读取长度突破480长度的限制，支持读取任意长度。</item>
+    ///             <item>AllenBradleyNet:读取地址优化，支持读取数组任意起始位置，任意长度，支持结构体嵌套读取。</item>
+    ///             <item>其他大量的代码细节优化。</item>
+    ///         </list>
+    ///     </revision>
+    ///     <revision date="2019-6-25" version="7.0.1" author="Richard.Hu">
+    ///         <list type="bullet">
+    ///             <item>IReadWriteNet完善几个忘记添加的Write不同类型参数的重载方法。</item>
+    ///             <item>IReadWriteNet新增ReadBool方法，Write(string address, bool value)方法，是否支持操作需要看plc是否支持，不支持返回操作不支持的错误。</item>
+    ///             <item>OmronFinsNet:新增一个属性，IsChangeSA1AfterReadFailed，当设置为True时，通信失败后，就会自动修改SA1的值，这样就能快速链接上PLC了。</item>
+    ///             <item>OmronFinsNet:新增读写E区的能力，地址示例E0.0，EF.100，E12.200。</item>
+    ///             <item>新增HslDeviceAddress特性类，现在支持直接基于对象的读写操作，提供了一种更加便捷的读写数据的机制，详细的关注后续的论坛。</item>
+    ///         </list>
+    ///     </revision>
     /// </revisionHistory>
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute( )]
     public class NamespaceDoc
@@ -790,4 +819,18 @@ namespace HslCommunication
 
     // bugs
     // IReadWriteNet接口可以读取数据可以，Write方法写入西门子数据不管赋值什么值写入都是0，强制转换成simenss7net 又可以正常写入
+
+
+
+
+    //git checkout A
+    //git log
+    //找出要合并的commit ID :
+    //例如
+    //0128660c08e325d410cb845616af355c0c19c6fe
+    //然后切换到B分支上
+    //git checkout B
+    //git cherry-pick  0128660c08e325d410cb845616af355c0c19c6fe
+
+    //然后就将A分支的某个commit合并到了B分支了
 }

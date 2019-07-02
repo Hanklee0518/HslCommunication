@@ -21,19 +21,6 @@ namespace HslCommunicationDemo
         }
 
 
-
-        private void linkLabel1_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e )
-        {
-            try
-            {
-                System.Diagnostics.Process.Start( linkLabel1.Text );
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show( ex.Message );
-            }
-        }
-
         private void FormSiemens_Load( object sender, EventArgs e )
         {
             panel2.Enabled = false;
@@ -42,10 +29,6 @@ namespace HslCommunicationDemo
             if(Program.Language == 2)
             {
                 Text = "LSis Virtual Server" ;
-                label2.Text = "blogs:";
-                label4.Text = "Agreement";
-                linkLabel2.Text = "thanks for the reward";
-                label20.Text = "Author:Hsl";
                 label3.Text = "port:";
                 button1.Text = "Start Server";
                 button11.Text = "Close Server";
@@ -54,6 +37,7 @@ namespace HslCommunicationDemo
                 button4.Text = "Connecting Alien client";
                 groupBox1.Text = "Single Data Read test";
                 label6.Text = "Adderss:";
+                label14.Text = "Com:";
                 label7.Text = "Result";
                 button_read_bool.Text = "Read Bit";
                 button6.Text = "r-byte";
@@ -83,6 +67,7 @@ namespace HslCommunicationDemo
                 button15.Text = "w-double";
                 button14.Text = "w-string";
 
+                button5.Text = "start com";
                 button8.Text = "Load";
                 button9.Text = "Save";
                 button10.Text = "Timed writing";

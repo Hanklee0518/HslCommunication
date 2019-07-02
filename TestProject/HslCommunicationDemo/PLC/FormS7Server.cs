@@ -20,20 +20,6 @@ namespace HslCommunicationDemo
             InitializeComponent( );
         }
 
-
-
-        private void linkLabel1_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e )
-        {
-            try
-            {
-                System.Diagnostics.Process.Start( linkLabel1.Text );
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show( ex.Message );
-            }
-        }
-
         private void FormSiemens_Load( object sender, EventArgs e )
         {
             panel2.Enabled = false;
@@ -42,10 +28,6 @@ namespace HslCommunicationDemo
             if(Program.Language == 2)
             {
                 Text = "S7 Virtual Server [data support i,q,m,db block read and write, db block only one, whether it is DB1.1 or DB100.1 refers to the same]";
-                label2.Text = "blogs:";
-                label4.Text = "Agreement";
-                linkLabel2.Text = "thanks for the reward";
-                label20.Text = "Author:Hsl";
                 label3.Text = "port:";
                 button1.Text = "Start Server";
                 button11.Text = "Close Server";
@@ -517,7 +499,7 @@ namespace HslCommunicationDemo
 
 
         private string timerAddress = string.Empty;
-        private ushort timerValue = 0;
+        private long timerValue = 0;
         private System.Windows.Forms.Timer timerWrite = null;
         private void button10_Click( object sender, EventArgs e )
         {
@@ -532,7 +514,8 @@ namespace HslCommunicationDemo
 
         private void TimerWrite_Tick( object sender, EventArgs e )
         {
-            s7NetServer.Write( timerAddress, timerValue );
+            ushort value = (ushort)(Math.Sin( 2 * Math.PI * timerValue / 100 ) * 100 + 100);
+            s7NetServer.Write( timerAddress, value );
             timerValue++;
         }
 
